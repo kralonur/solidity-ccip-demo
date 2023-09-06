@@ -1,0 +1,4 @@
+{
+  "router": "receiver router address",
+  "greeterAddress": "greeter ccip address"
+}
