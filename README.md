@@ -1,12 +1,16 @@
-# Project Title
+# Solidity CCIP Demo
 
-Info about the project.
+Demo project for [Chainlink CCIP (Cross-Chain Interoperability Protocol)](https://chain.link/cross-chain).
+
+Documentation about CCIP: [Documentation](https://docs.chain.link/ccip)
 
 ## Installation
 
 ### Pre Requisites
 
-Before running any command, you need to create a .env file and set a BIP-39 compatible mnemonic as an environment variable. Follow the example in .env.example. If you don't already have a mnemonic, use this [website](https://iancoleman.io/bip39/) to generate one.
+Before running any command, you need to create a .env file and set a BIP-39 compatible mnemonic as an environment
+variable. Follow the example in .env.example. If you don't already have a mnemonic, use this
+[website](https://iancoleman.io/bip39/) to generate one.
 
 1. Install node and npm
 2. Install yarn
@@ -90,6 +94,14 @@ Generate the code coverage report:
 ```bash
 yarn coverage
 ```
+
+## Deployment
+
+### Deployment
+
+1. Deploy the GreeterCCIP contract to destination chain.
+2. Deploy the GreeterReceiver contract to destination chain.
+3. Deploy the GreeterSender contract to source chain.
 
 ## Contributing
 

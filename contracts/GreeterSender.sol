@@ -7,15 +7,25 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { IGreeterReceiver } from "./IGreeterReceiver.sol";
 
+/**
+ * @title GreeterSender
+ * @dev This contract sends a greeting message to a GreeterReceiver contract using CCIP.
+ */
 contract GreeterSender is Ownable {
     enum Fee {
         NATIVE,
         LINK
     }
 
+    /// Address of the CCIP router.
     IRouterClient public immutable router;
+    /// Address of the LINK token.
     IERC20 public immutable linkToken;
 
+    /**
+     * @dev Emitted when a CCIP message is sent.
+     * @param messageId The ID of the message.
+     */
     event MessageSent(bytes32 messageId);
 
     constructor(address _linkToken, address _router) {
@@ -25,16 +35,32 @@ contract GreeterSender is Ownable {
         linkToken.approve(_router, type(uint256).max);
     }
 
+    /**
+     * @dev Fallback function to receive native tokens.
+     * It is required to send pay for CCIP fees in native tokens.
+     */
     receive() external payable {}
 
+    /**
+     * @dev Transfers native tokens to the owner.
+     */
     function transferNative() external onlyOwner {
         payable(msg.sender).transfer(address(this).balance);
     }
 
+    /**
+     * @dev Transfers LINK tokens to the owner.
+     */
     function transferLink() external onlyOwner {
         linkToken.transfer(msg.sender, linkToken.balanceOf(address(this)));
     }
 
+    /**
+     * @dev Sends a greeting message to a GreeterReceiver contract using CCIP with native fees.
+     * @param destinationChainSelector The chain selector of the destination chain.
+     * @param receiver The address of the GreeterReceiver contract.
+     * @param greetingMessage The greeting message to send.
+     */
     function setGreetingNative(
         uint64 destinationChainSelector,
         address receiver,
@@ -49,6 +75,12 @@ contract GreeterSender is Ownable {
         emit MessageSent(messageId);
     }
 
+    /**
+     * @dev Sends a greeting message to a GreeterReceiver contract using CCIP with LINK token.
+     * @param destinationChainSelector The chain selector of the destination chain.
+     * @param receiver The address of the GreeterReceiver contract.
+     * @param greetingMessage The greeting message to send.
+     */
     function setGreetingLink(
         uint64 destinationChainSelector,
         address receiver,
@@ -61,6 +93,12 @@ contract GreeterSender is Ownable {
         emit MessageSent(messageId);
     }
 
+    /**
+     * @dev Gets the fee for sending a greeting message to a GreeterReceiver contract using CCIP.
+     * @param destinationChainSelector The chain selector of the destination chain.
+     * @param receiver The address of the GreeterReceiver contract.
+     * @param greetingMessage The greeting message to send.
+     */
     function getFeeExternal(
         uint64 destinationChainSelector,
         address receiver,
@@ -72,6 +110,12 @@ contract GreeterSender is Ownable {
         return getFeePublic(destinationChainSelector, message);
     }
 
+    /**
+     * @dev Gets the CCIP message.
+     * @param receiver The address of the GreeterReceiver contract.
+     * @param greetingMessage The greeting message to send.
+     * @param feePayment The fee payment method.
+     */
     function getCCIPMessage(
         address receiver,
         string calldata greetingMessage,
@@ -87,6 +131,11 @@ contract GreeterSender is Ownable {
             });
     }
 
+    /**
+     * @dev Gets the fee for sending a CCIP message.
+     * @param destinationChainSelector The chain selector of the destination chain.
+     * @param message The CCIP message.
+     */
     function getFeePublic(
         uint64 destinationChainSelector,
         Client.EVM2AnyMessage memory message
